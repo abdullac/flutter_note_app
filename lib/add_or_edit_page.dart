@@ -63,11 +63,10 @@ class AddOrEditPage extends StatelessWidget {
                   // button
                   if (isEdit != true) {
                     print("button clicked for save");
-                    buttonClick(isEdit);
+                    buttonClick(isEdit, context);
                   } else {
                     print("button clicked for update");
-                    buttonClick(isEdit,dataModel: dataModel);
-                    Navigator.of(context).pop();
+                    buttonClick(isEdit, context, dataModel: dataModel);
                   }
                 },
                 label: Text(
@@ -83,18 +82,34 @@ class AddOrEditPage extends StatelessWidget {
   }
 }
 
-buttonClick(isEdit, {String? index, DataModel? dataModel}) {
+buttonClick(isEdit, context, {String? index, DataModel? dataModel}) async {
   DioCrud dioCrud = DioCrud();
   if (isEdit == false) {
-    dioCrud.createNote(DataModel(
+    final note = await dioCrud.createNote(DataModel(
       sId: DateTime.now().toString(),
       title: titleEditingController.text,
       content: contentEditingController.text,
     ));
+    if (note == null) {
+      print("unable to save");
+    } else {
+      listOfDataModelNotifier.value.clear();
+      listOfDataModelNotifier.value = await DioCrud.instance.getAllNotes();
+      listOfDataModelNotifier.notifyListeners();
+      Navigator.of(context).pop();
+    }
   } else {
-    dioCrud.updateNote(DataModel(
+    final note = dioCrud.updateNote(DataModel(
         sId: dataModel?.sId,
         title: titleEditingController.text,
         content: contentEditingController.text));
+    if (note == null) {
+      print("unable to update");
+    } else {
+      listOfDataModelNotifier.value.clear();
+      listOfDataModelNotifier.value = await DioCrud.instance.getAllNotes();
+      listOfDataModelNotifier.notifyListeners();
+      Navigator.of(context).pop();
+    }
   }
 }

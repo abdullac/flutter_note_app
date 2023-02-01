@@ -1,3 +1,4 @@
+import 'package:note_app/all_notes_page.dart';
 import 'package:note_app/model/data_model.dart';
 import 'package:dio/dio.dart';
 import 'package:note_app/model/list_model.dart';
@@ -7,7 +8,7 @@ abstract class ApiCalls {
   Future<DataModel?> createNote(DataModel dataModel);
   Future<List<DataModel>> getAllNotes();
   Future<DataModel?> updateNote(DataModel dataModel);
-  // Future<void> deleteNote(String id);
+  Future<void> deleteNote(String id);
 }
 
 class DioCrud extends ApiCalls {
@@ -18,6 +19,12 @@ class DioCrud extends ApiCalls {
     //   baseUrl: url.baseUrl,
     //   responseType: ResponseType.plain,
     // );
+  }
+
+  DioCrud._internal();
+  static DioCrud instance = DioCrud._internal();
+  DioCrud factory() {
+    return instance;
   }
 
   @override
@@ -38,19 +45,20 @@ class DioCrud extends ApiCalls {
 
   @override
   Future<List<DataModel>> getAllNotes() async {
-    List<DataModel> listDataModel = [];
+    // List<DataModel> listDataModel = [];
     ListModel responseListModel;
     try {
       Response response = await dio.get(url.baseUrl + url.getAllNotes);
       print(response.data);
       responseListModel = ListModel.fromJson(response.data);
-      responseListModel.data.forEach((element) {
-        listDataModel.add(element);
-      });
+      // listDataModel.addAll(responseListModel.data);
+      listOfDataModelNotifier.value.clear();
+      listOfDataModelNotifier.value.addAll(responseListModel.data.reversed);
+      listOfDataModelNotifier.notifyListeners();
     } catch (e) {
       print(e);
     }
-    return listDataModel;
+    return listOfDataModelNotifier.value;
   }
 
   @override
@@ -69,8 +77,14 @@ class DioCrud extends ApiCalls {
     return resposeDataModel;
   }
 
-  // @override
-  // Future<void> deleteNote(String id) {
-  //   //
-  // }
+  @override
+  Future<void> deleteNote(String id) async {
+    try {
+      Response response = await dio
+          .delete(url.baseUrl + url.deleteNote.replaceFirst("{id}", id));
+      print("Deleted ${response.data}");
+    } catch (e) {
+      print(e);
+    }
+  }
 }

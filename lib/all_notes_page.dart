@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:note_app/add_or_edit_page.dart';
 import 'package:note_app/model/data_model.dart';
-import 'package:note_app/model/list_model.dart';
 import 'package:note_app/network_services/api_calls.dart';
-
 
 final listOfDataModelNotifier = ValueNotifier([DataModel()]);
 
@@ -12,9 +10,8 @@ class AllNotesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DioCrud dioCrud = DioCrud();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      listOfDataModelNotifier.value = await dioCrud.getAllNotes();
+      listOfDataModelNotifier.value = await DioCrud.instance.getAllNotes();
     });
     return Stack(
       alignment: AlignmentDirectional.bottomCenter,
@@ -26,19 +23,21 @@ class AllNotesPage extends StatelessWidget {
               valueListenable: listOfDataModelNotifier,
               builder: (BuildContext context, value, Widget? _) {
                 final list = listOfDataModelNotifier.value;
-                return GridView.count(
+                return list.isEmpty
+                          ? Center(child: SizedBox(child: Text("Data Empty",style: TextStyle(color: Colors.red,fontSize: 20),)))
+                          :  GridView.count(
                   padding: const EdgeInsets.all(15),
                   crossAxisCount: 2,
                   mainAxisSpacing: 10,
                   crossAxisSpacing: 10,
                   children: List.generate(
-                    list.isEmpty ? 1 : list.length,
+                    list.isEmpty ? 0 : list.length,
                     (index) {
                       DataModel dataModel = list[index];
                       return TextArea(
-                        index: index,
-                        dataModel: dataModel,
-                      );
+                              index: index,
+                              dataModel: dataModel,
+                            );
                     },
                   ),
                 );
@@ -112,15 +111,20 @@ class TextArea extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    dataModel.title??"null",
+                    dataModel.title ?? "null",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.blueAccent[700],
                     ),
                   ),
                   IconButton(
-                      onPressed: () {
+                      onPressed: () async {
                         // delete button
+                        DioCrud.instance.deleteNote(dataModel.sId!);
+                        listOfDataModelNotifier.value.clear();
+                        listOfDataModelNotifier.value =
+                            await DioCrud.instance.getAllNotes();
+                        listOfDataModelNotifier.notifyListeners();
                       },
                       icon: Icon(
                         Icons.delete,
@@ -130,7 +134,7 @@ class TextArea extends StatelessWidget {
               ),
             ),
             Text(
-              dataModel.content??"null",
+              dataModel.content ?? "null",
               style: TextStyle(overflow: TextOverflow.ellipsis),
               maxLines: 3,
             ),
