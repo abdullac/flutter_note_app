@@ -4,9 +4,7 @@ import 'package:note_app/model/data_model.dart';
 import 'package:note_app/model/list_model.dart';
 import 'package:note_app/network_services/api_calls.dart';
 
-// ValueNotifier titleNotifier = ValueNotifier("Title");
-// ValueNotifier contentNotifier = ValueNotifier(
-//     "ff fsdf sihf fsfg ff d  dfg g gdf g df gdg d gdfgfdgdgdfgdg  fgdf gdg   g  gjgjd ddj dgd di g  iuf iuhdi dgh ddg duhgdg ghufigd ighdigd dgdhgiy7fdfi      yg7y   hgh hggggggggggggggggggggggggggggggggggggggggggg gdhugyhg  ig i  iu  uigy gggrrrrrrirueryh uiyt iu yiuey i ie iyiu tiiuy iytieuetyeiutyeeyi euyieuy");
+
 final listOfDataModelNotifier = ValueNotifier([DataModel()]);
 
 class AllNotesPage extends StatelessWidget {
@@ -15,15 +13,8 @@ class AllNotesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     DioCrud dioCrud = DioCrud();
-    // List<DataModel> listOfDataModel = [];
-    // DataModel dataModel = DataModel();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       listOfDataModelNotifier.value = await dioCrud.getAllNotes();
-      // listOfDataModelNotifier.value.forEach((element) {
-      //   dataModel.sId = element.sId;
-      //   dataModel.title = element.title;
-      //   dataModel.content = element.content;
-      // });
     });
     return Stack(
       alignment: AlignmentDirectional.bottomCenter,
@@ -37,7 +28,7 @@ class AllNotesPage extends StatelessWidget {
                 final list = listOfDataModelNotifier.value;
                 return GridView.count(
                   padding: const EdgeInsets.all(15),
-                  crossAxisCount: 1,
+                  crossAxisCount: 2,
                   mainAxisSpacing: 10,
                   crossAxisSpacing: 10,
                   children: List.generate(

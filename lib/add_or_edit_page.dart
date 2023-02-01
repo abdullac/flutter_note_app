@@ -61,16 +61,14 @@ class AddOrEditPage extends StatelessWidget {
                 ),
                 onPressed: () {
                   // button
-                  print(isEdit == true
-                      ? "button clicked for update"
-                      : "button clicked for save");
-                  DioCrud dioCrud = DioCrud();
-                  dioCrud.createNote(DataModel(
-                    sId: DateTime.now().toString(),
-                    title: titleEditingController.text,
-                    content: contentEditingController.text,
-                  ));
-                  Navigator.of(context).pop();
+                  if (isEdit != true) {
+                    print("button clicked for save");
+                    buttonClick(isEdit);
+                  } else {
+                    print("button clicked for update");
+                    buttonClick(isEdit,dataModel: dataModel);
+                    Navigator.of(context).pop();
+                  }
                 },
                 label: Text(
                   isEdit != true ? "Save Note" : "Update Note",
@@ -82,5 +80,21 @@ class AddOrEditPage extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+buttonClick(isEdit, {String? index, DataModel? dataModel}) {
+  DioCrud dioCrud = DioCrud();
+  if (isEdit == false) {
+    dioCrud.createNote(DataModel(
+      sId: DateTime.now().toString(),
+      title: titleEditingController.text,
+      content: contentEditingController.text,
+    ));
+  } else {
+    dioCrud.updateNote(DataModel(
+        sId: dataModel?.sId,
+        title: titleEditingController.text,
+        content: contentEditingController.text));
   }
 }

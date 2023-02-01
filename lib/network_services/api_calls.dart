@@ -6,7 +6,7 @@ import 'package:note_app/network_services/url.dart';
 abstract class ApiCalls {
   Future<DataModel?> createNote(DataModel dataModel);
   Future<List<DataModel>> getAllNotes();
-  // Future<DataModel> updateNote(DataModel dataModel);
+  Future<DataModel?> updateNote(DataModel dataModel);
   // Future<void> deleteNote(String id);
 }
 
@@ -44,7 +44,7 @@ class DioCrud extends ApiCalls {
       Response response = await dio.get(url.baseUrl + url.getAllNotes);
       print(response.data);
       responseListModel = ListModel.fromJson(response.data);
-      responseListModel.data.forEach((element) { 
+      responseListModel.data.forEach((element) {
         listDataModel.add(element);
       });
     } catch (e) {
@@ -53,10 +53,21 @@ class DioCrud extends ApiCalls {
     return listDataModel;
   }
 
-  // @override
-  // Future<DataModel> updateNote(DataModel dataModel) {
-  //   //
-  // }
+  @override
+  Future<DataModel?> updateNote(DataModel dataModel) async {
+    DataModel? resposeDataModel;
+    try {
+      Response response = await dio.put(
+        url.baseUrl + url.updateNote,
+        data: dataModel.toJson(),
+      );
+      print(response.data);
+      resposeDataModel = DataModel.fromJson(response.data);
+    } catch (e) {
+      print(e);
+    }
+    return resposeDataModel;
+  }
 
   // @override
   // Future<void> deleteNote(String id) {
