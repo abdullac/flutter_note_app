@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:note_app/add_or_edit_page.dart';
 import 'package:note_app/all_notes_page.dart';
 
-enum FloatButtonType {
-  addNote,
-  saveNote,
-}
+// enum FloatButtonType {
+//   addNote,
+//   saveNote,
+// }
 
-ValueNotifier<FloatButtonType> topButtonNotifier =
-    ValueNotifier(FloatButtonType.addNote);
+// ValueNotifier<FloatButtonType> topButtonNotifier =
+//     ValueNotifier(FloatButtonType.addNote);
 
-String appBarText = "AllNotes";
 
 void main() {
   runApp(MyApp());
@@ -23,7 +21,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(primarySwatch: Colors.indigo),
       home: Scaffold(
         appBar: AppBar(
-          title: Text(appBarText),
+          title: Text("All Notes"),
         ),
         body: SafeArea(
           child: AllNotesPage(),

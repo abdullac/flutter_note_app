@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:note_app/add_or_edit_page.dart';
+import 'package:note_app/network_services/api_calls.dart';
+
+ValueNotifier titleNotifier = ValueNotifier("Title");
+ValueNotifier contentNotifier = ValueNotifier(
+    "ff fsdf sihf fsfg ff d  dfg g gdf g df gdg d gdfgfdgdgdfgdg  fgdf gdg   g  gjgjd ddj dgd di g  iuf iuhdi dgh ddg duhgdg ghufigd ighdigd dgdhgiy7fdfi      yg7y   hgh hggggggggggggggggggggggggggggggggggggggggggg gdhugyhg  ig i  iu  uigy gggrrrrrrirueryh uiyt iu yiuey i ie iyiu tiiuy iytieuetyeiutyeeyi euyieuy");
 
 class AllNotesPage extends StatelessWidget {
   const AllNotesPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    DioCrud dioCrud = DioCrud();
+    dioCrud.getAllNotes();
     return Stack(
       alignment: AlignmentDirectional.bottomCenter,
       children: [
@@ -19,7 +26,9 @@ class AllNotesPage extends StatelessWidget {
             crossAxisSpacing: 10,
             children: List.generate(
               10,
-              (index) => const TextArea(),
+              (index) => TextArea(
+                index: index,
+              ),
             ),
           ),
         ),
@@ -32,8 +41,10 @@ class AllNotesPage extends StatelessWidget {
             ),
             onPressed: () {
               // button
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddOrEditPage()));
-              print("wwww");
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => AddOrEditPage(
+                        isEdit: false,
+                      )));
             },
             label: const Text(
               "Add Note",
@@ -47,14 +58,23 @@ class AllNotesPage extends StatelessWidget {
 }
 
 class TextArea extends StatelessWidget {
-  const TextArea({super.key});
+  final int index;
+  const TextArea({
+    super.key,
+    required this.index,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (ctx) => AddOrEditPage(),
+          builder: (ctx) => AddOrEditPage(
+            isEdit: true,
+            id: "$index",
+            title: titleNotifier.value,
+            content: contentNotifier.value,
+          ),
         ));
       },
       child: Container(
@@ -70,7 +90,7 @@ class TextArea extends StatelessWidget {
           children: [
             Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(8), topRight: Radius.circular(8)),
                 color: Colors.pink[300],
               ),
@@ -79,7 +99,7 @@ class TextArea extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Title",
+                    titleNotifier.value,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.blueAccent[700],
@@ -87,7 +107,7 @@ class TextArea extends StatelessWidget {
                   ),
                   IconButton(
                       onPressed: () {
-                        //
+                        // delete button
                       },
                       icon: Icon(
                         Icons.delete,
@@ -97,7 +117,7 @@ class TextArea extends StatelessWidget {
               ),
             ),
             Text(
-              "ff fsdf sihf fsfg ff d  dfg g gdf g df gdg d gdfgfdgdgdfgdg  fgdf gdg   g  gjgjd ddj dgd di g  iuf iuhdi dgh ddg duhgdg ghufigd ighdigd dgdhgiy7fdfi      yg7y   hgh hggggggggggggggggggggggggggggggggggggggggggg gdhugyhg  ig i  iu  uigy gggrrrrrrirueryh uiyt iu yiuey i ie iyiu tiiuy iytieuetyeiutyeeyi euyieuy",
+              contentNotifier.value,
               style: TextStyle(overflow: TextOverflow.ellipsis),
               maxLines: 3,
             ),

@@ -1,0 +1,11 @@
+
+
+class Url{
+  String baseUrl = "http://127.0.0.1:3000";
+  String createNote = "/note/create";
+  String getAllNotes = "/note/getAll";
+  String updateNote = "/note/update";
+  String deleteNote = "/delete/";
+
+}
+
