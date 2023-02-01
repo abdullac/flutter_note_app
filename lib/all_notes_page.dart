@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:note_app/add_or_edit_page.dart';
+import 'package:note_app/model/data_model.dart';
+import 'package:note_app/model/list_model.dart';
 import 'package:note_app/network_services/api_calls.dart';
 
-ValueNotifier titleNotifier = ValueNotifier("Title");
-ValueNotifier contentNotifier = ValueNotifier(
-    "ff fsdf sihf fsfg ff d  dfg g gdf g df gdg d gdfgfdgdgdfgdg  fgdf gdg   g  gjgjd ddj dgd di g  iuf iuhdi dgh ddg duhgdg ghufigd ighdigd dgdhgiy7fdfi      yg7y   hgh hggggggggggggggggggggggggggggggggggggggggggg gdhugyhg  ig i  iu  uigy gggrrrrrrirueryh uiyt iu yiuey i ie iyiu tiiuy iytieuetyeiutyeeyi euyieuy");
+// ValueNotifier titleNotifier = ValueNotifier("Title");
+// ValueNotifier contentNotifier = ValueNotifier(
+//     "ff fsdf sihf fsfg ff d  dfg g gdf g df gdg d gdfgfdgdgdfgdg  fgdf gdg   g  gjgjd ddj dgd di g  iuf iuhdi dgh ddg duhgdg ghufigd ighdigd dgdhgiy7fdfi      yg7y   hgh hggggggggggggggggggggggggggggggggggggggggggg gdhugyhg  ig i  iu  uigy gggrrrrrrirueryh uiyt iu yiuey i ie iyiu tiiuy iytieuetyeiutyeeyi euyieuy");
+final listOfDataModelNotifier = ValueNotifier([DataModel()]);
 
 class AllNotesPage extends StatelessWidget {
   const AllNotesPage({Key? key}) : super(key: key);
@@ -12,25 +15,43 @@ class AllNotesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     DioCrud dioCrud = DioCrud();
-    dioCrud.getAllNotes();
+    // List<DataModel> listOfDataModel = [];
+    // DataModel dataModel = DataModel();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      listOfDataModelNotifier.value = await dioCrud.getAllNotes();
+      // listOfDataModelNotifier.value.forEach((element) {
+      //   dataModel.sId = element.sId;
+      //   dataModel.title = element.title;
+      //   dataModel.content = element.content;
+      // });
+    });
     return Stack(
       alignment: AlignmentDirectional.bottomCenter,
       children: [
         Container(
           width: double.infinity,
           color: Colors.cyan,
-          child: GridView.count(
-            padding: const EdgeInsets.all(15),
-            crossAxisCount: 1,
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10,
-            children: List.generate(
-              10,
-              (index) => TextArea(
-                index: index,
-              ),
-            ),
-          ),
+          child: ValueListenableBuilder(
+              valueListenable: listOfDataModelNotifier,
+              builder: (BuildContext context, value, Widget? _) {
+                final list = listOfDataModelNotifier.value;
+                return GridView.count(
+                  padding: const EdgeInsets.all(15),
+                  crossAxisCount: 1,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 10,
+                  children: List.generate(
+                    list.isEmpty ? 1 : list.length,
+                    (index) {
+                      DataModel dataModel = list[index];
+                      return TextArea(
+                        index: index,
+                        dataModel: dataModel,
+                      );
+                    },
+                  ),
+                );
+              }),
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
@@ -59,9 +80,11 @@ class AllNotesPage extends StatelessWidget {
 
 class TextArea extends StatelessWidget {
   final int index;
+  final DataModel dataModel;
   const TextArea({
     super.key,
     required this.index,
+    required this.dataModel,
   });
 
   @override
@@ -71,9 +94,8 @@ class TextArea extends StatelessWidget {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (ctx) => AddOrEditPage(
             isEdit: true,
-            id: "$index",
-            title: titleNotifier.value,
-            content: contentNotifier.value,
+            index: "$index",
+            dataModel: dataModel,
           ),
         ));
       },
@@ -99,7 +121,7 @@ class TextArea extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    titleNotifier.value,
+                    dataModel.title??"null",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.blueAccent[700],
@@ -117,7 +139,7 @@ class TextArea extends StatelessWidget {
               ),
             ),
             Text(
-              contentNotifier.value,
+              dataModel.content??"null",
               style: TextStyle(overflow: TextOverflow.ellipsis),
               maxLines: 3,
             ),

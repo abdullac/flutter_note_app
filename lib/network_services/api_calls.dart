@@ -1,5 +1,6 @@
 import 'package:note_app/model/data_model.dart';
 import 'package:dio/dio.dart';
+import 'package:note_app/model/list_model.dart';
 import 'package:note_app/network_services/url.dart';
 
 abstract class ApiCalls {
@@ -37,10 +38,19 @@ class DioCrud extends ApiCalls {
 
   @override
   Future<List<DataModel>> getAllNotes() async {
-    Response response = await dio.get(url.baseUrl+url.getAllNotes);
-    print(response.data);
-    DataModel.fromJson(response.data);
-    return [];
+    List<DataModel> listDataModel = [];
+    ListModel responseListModel;
+    try {
+      Response response = await dio.get(url.baseUrl + url.getAllNotes);
+      print(response.data);
+      responseListModel = ListModel.fromJson(response.data);
+      responseListModel.data.forEach((element) { 
+        listDataModel.add(element);
+      });
+    } catch (e) {
+      print(e);
+    }
+    return listDataModel;
   }
 
   // @override

@@ -8,21 +8,19 @@ TextEditingController contentEditingController = TextEditingController();
 
 class AddOrEditPage extends StatelessWidget {
   final bool isEdit;
-  final String? id;
-  final String? title;
-  final String? content;
+  final String? index;
+  final DataModel? dataModel;
   const AddOrEditPage({
     Key? key,
     required this.isEdit,
-    this.title,
-    this.content,
-    this.id,
+    this.index,
+    this.dataModel,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    titleEditingController.text = title ?? "";
-    contentEditingController.text = content ?? "";
+    titleEditingController.text = dataModel?.title ?? "";
+    contentEditingController.text = dataModel?.content ?? "";
     return Material(
       child: Scaffold(
         appBar: AppBar(
