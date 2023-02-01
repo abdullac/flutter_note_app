@@ -32,7 +32,7 @@ class AllNotesPage extends StatelessWidget {
             ),
             onPressed: () {
               // button
-        
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddOrEditPage()));
               print("wwww");
             },
             label: const Text(
